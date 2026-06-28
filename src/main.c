@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "dynamic_array.h"
 #include "linked_list.h"
+#include "double_list.h"
 
 /*
  * Prueba las operaciones principales del arreglo dinámico.
@@ -57,39 +58,22 @@ static void test_linked_list(void) {
 
     printf("\n=== Lista enlazada simple ===\n");
 
-    /*
-     * Primero se inicializa la lista.
-     * En este punto, head apunta a NULL y size vale 0.
-     */
     ll_init(&list);
 
     printf("Lista inicial:\n");
     ll_print_forward(&list);
 
-    /*
-     * Insertar al inicio coloca cada nuevo nodo como primer elemento.
-     * Por eso, aunque se insertan 30, 20 y 10, el orden final queda:
-     * 10 -> 20 -> 30
-     */
     printf("\nInsertando al inicio: 30, 20, 10\n");
     ll_insert_front(&list, 30);
     ll_insert_front(&list, 20);
     ll_insert_front(&list, 10);
     ll_print_forward(&list);
 
-    /*
-     * Insertar al final recorre la lista hasta encontrar el último nodo.
-     * Los nuevos valores quedan después del último elemento.
-     */
     printf("\nInsertando al final: 40, 50\n");
     ll_insert_back(&list, 40);
     ll_insert_back(&list, 50);
     ll_print_forward(&list);
 
-    /*
-     * Insertar en una posición específica permite colocar un nodo en medio.
-     * En este caso, el valor 99 se inserta en el índice 2.
-     */
     printf("\nInsertando 99 en la posicion 2:\n");
     if (ll_insert_at(&list, 2, 99)) {
         printf("Elemento insertado correctamente.\n");
@@ -98,10 +82,6 @@ static void test_linked_list(void) {
     }
     ll_print_forward(&list);
 
-    /*
-     * Buscar revisa la lista nodo por nodo.
-     * Si encuentra el valor, guarda su posición en index.
-     */
     printf("\nBuscando el valor 40:\n");
     if (ll_search(&list, 40, &index)) {
         printf("Valor encontrado en el indice %zu.\n", index);
@@ -109,10 +89,6 @@ static void test_linked_list(void) {
         printf("Valor no encontrado.\n");
     }
 
-    /*
-     * Eliminar por valor borra la primera aparición encontrada.
-     * Además, se libera la memoria del nodo eliminado.
-     */
     printf("\nEliminando el valor 99:\n");
     if (ll_remove_value(&list, 99)) {
         printf("Valor eliminado correctamente.\n");
@@ -121,23 +97,111 @@ static void test_linked_list(void) {
     }
     ll_print_forward(&list);
 
-    /*
-     * Al final se libera toda la lista para evitar fugas de memoria.
-     */
     printf("\nLiberando memoria de la lista enlazada.\n");
     ll_free(&list);
     ll_print_forward(&list);
 }
 
 /*
+ * Prueba las operaciones principales de la lista doblemente enlazada.
+ */
+static void test_double_list(void) {
+    DoubleList list;
+    size_t index;
+
+    printf("\n=== Lista doblemente enlazada ===\n");
+
+    /*
+     * Se inicializa la lista.
+     * Al inicio no hay nodos, entonces head y tail apuntan a NULL.
+     */
+    dl_init(&list);
+
+    printf("Lista inicial:\n");
+    dl_print_forward(&list);
+    dl_print_backward(&list);
+
+    /*
+     * Insertar al inicio coloca cada nuevo nodo antes del primer nodo actual.
+     * Por eso, al insertar 30, luego 20 y luego 10, el orden hacia adelante
+     * queda 10 20 30.
+     */
+    printf("\nInsertando al inicio: 30, 20, 10\n");
+    dl_insert_front(&list, 30);
+    dl_insert_front(&list, 20);
+    dl_insert_front(&list, 10);
+    dl_print_forward(&list);
+    dl_print_backward(&list);
+
+    /*
+     * Insertar al final coloca los nuevos nodos después del último nodo actual.
+     * Como la lista tiene tail, esta operación puede conectar directamente
+     * el nuevo nodo al final.
+     */
+    printf("\nInsertando al final: 40, 50\n");
+    dl_insert_back(&list, 40);
+    dl_insert_back(&list, 50);
+    dl_print_forward(&list);
+    dl_print_backward(&list);
+
+    /*
+     * Insertar en una posición específica permite meter un elemento en medio.
+     * En este caso se agrega 99 en el índice 2.
+     */
+    printf("\nInsertando 99 en la posicion 2:\n");
+    if (dl_insert_at(&list, 2, 99)) {
+        printf("Elemento insertado correctamente.\n");
+    } else {
+        printf("No se pudo insertar el elemento.\n");
+    }
+    dl_print_forward(&list);
+    dl_print_backward(&list);
+
+    /*
+     * Buscar recorre la lista desde el inicio hasta encontrar el valor.
+     * Si lo encuentra, guarda el índice donde apareció.
+     */
+    printf("\nBuscando el valor 40:\n");
+    if (dl_search(&list, 40, &index)) {
+        printf("Valor encontrado en el indice %zu.\n", index);
+    } else {
+        printf("Valor no encontrado.\n");
+    }
+
+    /*
+     * Eliminar por dato borra la primera aparición del valor.
+     * Como es una lista doble, se deben reconectar tanto los punteros next
+     * como los punteros prev para que la lista quede consistente.
+     */
+    printf("\nEliminando el valor 99:\n");
+    if (dl_remove_value(&list, 99)) {
+        printf("Valor eliminado correctamente.\n");
+    } else {
+        printf("Valor no encontrado.\n");
+    }
+    dl_print_forward(&list);
+    dl_print_backward(&list);
+
+    /*
+     * Al final se libera la memoria de todos los nodos.
+     * Esto es necesario para evitar memory leaks.
+     */
+    printf("\nLiberando memoria de la lista doblemente enlazada.\n");
+    dl_free(&list);
+    dl_print_forward(&list);
+    dl_print_backward(&list);
+}
+
+/*
  * Función principal del laboratorio.
- * Desde aquí se llaman las pruebas de cada estructura de datos.
+ * Aquí se llaman las pruebas de cada estructura implementada.
  */
 int main(void) {
     printf("Laboratorio 5 - Estructuras de Datos Dinamicas\n\n");
 
     test_dynamic_array();
     test_linked_list();
+    test_double_list();
 
     return 0;
 }
