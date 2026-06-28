@@ -1,3 +1,4 @@
+#include "stack.h"
 #include <stdio.h>
 #include "dynamic_array.h"
 #include "linked_list.h"
@@ -193,6 +194,91 @@ static void test_double_list(void) {
 }
 
 /*
+ * Prueba las operaciones principales del stack.
+ */
+static void test_stack(void) {
+    Stack stack;
+    int value;
+
+    printf("\n=== Stack ===\n");
+
+    /*
+     * Se inicializa la pila vacía.
+     */
+    stack_init(&stack);
+
+    printf("Stack inicial:\n");
+    stack_print(&stack);
+
+    /*
+     * Push agrega elementos en el tope de la pila.
+     */
+    printf("\nAgregando elementos con push: 10, 20, 30\n");
+    stack_push(&stack, 10);
+    stack_push(&stack, 20);
+    stack_push(&stack, 30);
+    stack_print(&stack);
+
+    /*
+     * Peek permite ver el elemento superior sin eliminarlo.
+     */
+    printf("\nConsultando el tope con peek:\n");
+    if (stack_peek(&stack, &value)) {
+        printf("Elemento en el tope: %d\n", value);
+    } else {
+        printf("No se pudo consultar el tope.\n");
+    }
+    stack_print(&stack);
+
+    /*
+     * Pop elimina el elemento superior.
+     */
+    printf("\nEliminando elementos con pop:\n");
+    if (stack_pop(&stack, &value)) {
+        printf("Elemento eliminado: %d\n", value);
+    }
+    stack_print(&stack);
+
+    if (stack_pop(&stack, &value)) {
+        printf("Elemento eliminado: %d\n", value);
+    }
+    stack_print(&stack);
+
+    /*
+     * isEmpty verifica si la pila está vacía.
+     */
+    printf("\nVerificando si el stack esta vacio:\n");
+    if (stack_is_empty(&stack)) {
+        printf("El stack esta vacio.\n");
+    } else {
+        printf("El stack todavia tiene elementos.\n");
+    }
+
+    /*
+     * Se elimina el último elemento restante.
+     */
+    printf("\nEliminando el ultimo elemento:\n");
+    if (stack_pop(&stack, &value)) {
+        printf("Elemento eliminado: %d\n", value);
+    }
+    stack_print(&stack);
+
+    printf("\nVerificando nuevamente si el stack esta vacio:\n");
+    if (stack_is_empty(&stack)) {
+        printf("El stack esta vacio.\n");
+    } else {
+        printf("El stack todavia tiene elementos.\n");
+    }
+
+    /*
+     * Se libera la memoria del stack.
+     */
+    printf("\nLiberando memoria del stack.\n");
+    stack_free(&stack);
+    stack_print(&stack);
+}
+
+/*
  * Función principal del laboratorio.
  * Aquí se llaman las pruebas de cada estructura implementada.
  */
@@ -202,6 +288,7 @@ int main(void) {
     test_dynamic_array();
     test_linked_list();
     test_double_list();
+    test_stack();
 
     return 0;
 }
